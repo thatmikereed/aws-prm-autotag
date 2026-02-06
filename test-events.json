@@ -1,0 +1,114 @@
+{
+  "test_events": [
+    {
+      "name": "dry-run-current-region",
+      "description": "Test tagging in current region without applying changes",
+      "payload": {
+        "dry_run": true
+      }
+    },
+    {
+      "name": "tag-current-region",
+      "description": "Tag resources in current region",
+      "payload": {
+        "dry_run": false
+      }
+    },
+    {
+      "name": "tag-multiple-regions",
+      "description": "Tag resources across multiple regions",
+      "payload": {
+        "dry_run": false,
+        "regions": [
+          "us-east-1",
+          "us-west-2",
+          "eu-west-1"
+        ]
+      }
+    },
+    {
+      "name": "tag-specific-services",
+      "description": "Tag only specific AWS services",
+      "payload": {
+        "dry_run": false,
+        "services": [
+          "ec2",
+          "s3",
+          "lambda",
+          "rds"
+        ]
+      }
+    },
+    {
+      "name": "dry-run-multi-region",
+      "description": "Test multi-region tagging without applying",
+      "payload": {
+        "dry_run": true,
+        "regions": [
+          "us-east-1",
+          "us-east-2",
+          "us-west-1",
+          "us-west-2"
+        ]
+      }
+    },
+    {
+      "name": "tag-all-us-regions",
+      "description": "Tag resources in all US regions",
+      "payload": {
+        "dry_run": false,
+        "regions": [
+          "us-east-1",
+          "us-east-2",
+          "us-west-1",
+          "us-west-2"
+        ]
+      }
+    },
+    {
+      "name": "tag-compute-only",
+      "description": "Tag only compute resources (EC2, Lambda, ECS, EKS)",
+      "payload": {
+        "dry_run": false,
+        "services": [
+          "ec2",
+          "lambda",
+          "ecs",
+          "eks"
+        ]
+      }
+    },
+    {
+      "name": "tag-storage-only",
+      "description": "Tag only storage resources (S3, EBS, EFS)",
+      "payload": {
+        "dry_run": false,
+        "services": [
+          "s3",
+          "ec2"
+        ]
+      }
+    },
+    {
+      "name": "tag-databases-only",
+      "description": "Tag only database resources",
+      "payload": {
+        "dry_run": false,
+        "services": [
+          "rds",
+          "dynamodb",
+          "elasticache"
+        ]
+      }
+    },
+    {
+      "name": "custom-tag-values",
+      "description": "Use custom tag key and value",
+      "payload": {
+        "dry_run": false,
+        "tag_key": "custom-partner-id",
+        "tag_value": "partner:12345"
+      }
+    }
+  ]
+}

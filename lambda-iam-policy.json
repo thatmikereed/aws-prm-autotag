@@ -1,0 +1,364 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Sid": "ResourceGroupsTaggingAPI",
+      "Effect": "Allow",
+      "Action": [
+        "tag:GetResources",
+        "tag:TagResources",
+        "tag:UntagResources"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EC2Tagging",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeVolumes",
+        "ec2:DescribeSnapshots",
+        "ec2:DescribeTransitGateways",
+        "ec2:DescribeRegions",
+        "ec2:CreateTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3Tagging",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation",
+        "s3:GetBucketTagging",
+        "s3:PutBucketTagging"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RDSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "rds:DescribeDBInstances",
+        "rds:DescribeDBClusters",
+        "rds:AddTagsToResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LambdaTagging",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:ListFunctions",
+        "lambda:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DynamoDBTagging",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:ListTables",
+        "dynamodb:DescribeTable",
+        "dynamodb:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:ListClusters",
+        "ecs:ListServices",
+        "ecs:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EKSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "eks:ListClusters",
+        "eks:DescribeCluster",
+        "eks:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ElastiCacheTagging",
+      "Effect": "Allow",
+      "Action": [
+        "elasticache:DescribeCacheClusters",
+        "elasticache:DescribeReplicationGroups",
+        "elasticache:AddTagsToResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RedshiftTagging",
+      "Effect": "Allow",
+      "Action": [
+        "redshift:DescribeClusters",
+        "redshift:CreateTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudFrontTagging",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:ListDistributions",
+        "cloudfront:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "APIGatewayTagging",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LoadBalancerTagging",
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeTags",
+        "elasticloadbalancing:AddTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "KinesisTagging",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:ListStreams",
+        "kinesis:AddTagsToStream"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SNSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "sns:ListTopics",
+        "sns:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SQSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ListQueues",
+        "sqs:GetQueueAttributes",
+        "sqs:TagQueue"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "StepFunctionsTagging",
+      "Effect": "Allow",
+      "Action": [
+        "states:ListStateMachines",
+        "states:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SecretsManagerTagging",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:ListSecrets",
+        "secretsmanager:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "KMSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "kms:ListKeys",
+        "kms:DescribeKey",
+        "kms:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EFSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "elasticfilesystem:DescribeFileSystems",
+        "elasticfilesystem:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "FSxTagging",
+      "Effect": "Allow",
+      "Action": [
+        "fsx:DescribeFileSystems",
+        "fsx:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "BackupTagging",
+      "Effect": "Allow",
+      "Action": [
+        "backup:ListBackupVaults",
+        "backup:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "GlueTagging",
+      "Effect": "Allow",
+      "Action": [
+        "glue:GetJobs",
+        "glue:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SageMakerTagging",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:ListEndpoints",
+        "sagemaker:ListModels",
+        "sagemaker:AddTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "OpenSearchTagging",
+      "Effect": "Allow",
+      "Action": [
+        "es:ListDomainNames",
+        "es:DescribeDomain",
+        "es:AddTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "MSKTagging",
+      "Effect": "Allow",
+      "Action": [
+        "kafka:ListClustersV2",
+        "kafka:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "NeptuneTagging",
+      "Effect": "Allow",
+      "Action": [
+        "neptune:DescribeDBClusters",
+        "neptune:AddTagsToResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DocumentDBTagging",
+      "Effect": "Allow",
+      "Action": [
+        "docdb:DescribeDBClusters",
+        "docdb:AddTagsToResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AthenaTagging",
+      "Effect": "Allow",
+      "Action": [
+        "athena:ListWorkGroups",
+        "athena:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRTagging",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:DescribeRepositories",
+        "ecr:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CodeBuildTagging",
+      "Effect": "Allow",
+      "Action": [
+        "codebuild:ListProjects",
+        "codebuild:UpdateProject"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CodePipelineTagging",
+      "Effect": "Allow",
+      "Action": [
+        "codepipeline:ListPipelines",
+        "codepipeline:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DMSTagging",
+      "Effect": "Allow",
+      "Action": [
+        "dms:DescribeReplicationInstances",
+        "dms:AddTagsToResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DataSyncTagging",
+      "Effect": "Allow",
+      "Action": [
+        "datasync:ListTasks",
+        "datasync:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "WorkSpacesTagging",
+      "Effect": "Allow",
+      "Action": [
+        "workspaces:DescribeWorkspaces",
+        "workspaces:CreateTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "MemoryDBTagging",
+      "Effect": "Allow",
+      "Action": [
+        "memorydb:DescribeClusters",
+        "memorydb:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "STSGetCallerIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

@@ -1,0 +1,360 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Partner Revenue Measurement (PRM) Auto-Tagging Lambda Function'
+
+Parameters:
+  TagKey:
+    Type: String
+    Default: 'aws-apn-id'
+    Description: The tag key to apply to resources
+  
+  TagValue:
+    Type: String
+    Default: 'pc:3jtjsihjubajawpl401j5b27s'
+    Description: The tag value to apply to resources
+  
+  TargetRegions:
+    Type: String
+    Default: ''
+    Description: Comma-separated list of regions to process (leave empty for current region only)
+  
+  ScheduleExpression:
+    Type: String
+    Default: 'rate(1 day)'
+    Description: EventBridge schedule expression for automatic tagging
+    AllowedValues:
+      - 'rate(1 hour)'
+      - 'rate(6 hours)'
+      - 'rate(12 hours)'
+      - 'rate(1 day)'
+      - 'rate(7 days)'
+      - 'cron(0 2 * * ? *)'  # Daily at 2 AM UTC
+  
+  EnableSchedule:
+    Type: String
+    Default: 'true'
+    Description: Enable automatic scheduled execution
+    AllowedValues:
+      - 'true'
+      - 'false'
+  
+  LambdaTimeout:
+    Type: Number
+    Default: 900
+    MinValue: 60
+    MaxValue: 900
+    Description: Lambda function timeout in seconds (max 15 minutes)
+  
+  LambdaMemory:
+    Type: Number
+    Default: 512
+    AllowedValues: [128, 256, 512, 1024, 2048, 3008]
+    Description: Lambda function memory in MB
+
+Conditions:
+  ScheduleEnabled: !Equals [!Ref EnableSchedule, 'true']
+  HasTargetRegions: !Not [!Equals [!Ref TargetRegions, '']]
+
+Resources:
+  # IAM Role for Lambda
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-LambdaRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: PRMTaggingPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ResourceGroupsTaggingAPI
+                Effect: Allow
+                Action:
+                  - tag:GetResources
+                  - tag:TagResources
+                  - tag:UntagResources
+                Resource: '*'
+              - Sid: EC2Tagging
+                Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeVolumes
+                  - ec2:DescribeSnapshots
+                  - ec2:DescribeTransitGateways
+                  - ec2:DescribeRegions
+                  - ec2:CreateTags
+                Resource: '*'
+              - Sid: S3Tagging
+                Effect: Allow
+                Action:
+                  - s3:ListAllMyBuckets
+                  - s3:GetBucketLocation
+                  - s3:GetBucketTagging
+                  - s3:PutBucketTagging
+                Resource: '*'
+              - Sid: RDSTagging
+                Effect: Allow
+                Action:
+                  - rds:DescribeDBInstances
+                  - rds:DescribeDBClusters
+                  - rds:AddTagsToResource
+                Resource: '*'
+              - Sid: LambdaTagging
+                Effect: Allow
+                Action:
+                  - lambda:ListFunctions
+                  - lambda:TagResource
+                Resource: '*'
+              - Sid: DynamoDBTagging
+                Effect: Allow
+                Action:
+                  - dynamodb:ListTables
+                  - dynamodb:DescribeTable
+                  - dynamodb:TagResource
+                Resource: '*'
+              - Sid: ECSTagging
+                Effect: Allow
+                Action:
+                  - ecs:ListClusters
+                  - ecs:ListServices
+                  - ecs:TagResource
+                Resource: '*'
+              - Sid: EKSTagging
+                Effect: Allow
+                Action:
+                  - eks:ListClusters
+                  - eks:DescribeCluster
+                  - eks:TagResource
+                Resource: '*'
+              - Sid: ElastiCacheTagging
+                Effect: Allow
+                Action:
+                  - elasticache:DescribeCacheClusters
+                  - elasticache:DescribeReplicationGroups
+                  - elasticache:AddTagsToResource
+                Resource: '*'
+              - Sid: LoadBalancerTagging
+                Effect: Allow
+                Action:
+                  - elasticloadbalancing:DescribeLoadBalancers
+                  - elasticloadbalancing:DescribeTags
+                  - elasticloadbalancing:AddTags
+                Resource: '*'
+              - Sid: SNSSQSTagging
+                Effect: Allow
+                Action:
+                  - sns:ListTopics
+                  - sns:TagResource
+                  - sqs:ListQueues
+                  - sqs:GetQueueAttributes
+                  - sqs:TagQueue
+                Resource: '*'
+              - Sid: StepFunctionsTagging
+                Effect: Allow
+                Action:
+                  - states:ListStateMachines
+                  - states:TagResource
+                Resource: '*'
+              - Sid: SecretsManagerTagging
+                Effect: Allow
+                Action:
+                  - secretsmanager:ListSecrets
+                  - secretsmanager:TagResource
+                Resource: '*'
+              - Sid: KMSTagging
+                Effect: Allow
+                Action:
+                  - kms:ListKeys
+                  - kms:DescribeKey
+                  - kms:TagResource
+                Resource: '*'
+              - Sid: EFSTagging
+                Effect: Allow
+                Action:
+                  - elasticfilesystem:DescribeFileSystems
+                  - elasticfilesystem:TagResource
+                Resource: '*'
+              - Sid: AdditionalServices
+                Effect: Allow
+                Action:
+                  - fsx:DescribeFileSystems
+                  - fsx:TagResource
+                  - backup:ListBackupVaults
+                  - backup:TagResource
+                  - glue:GetJobs
+                  - glue:TagResource
+                  - sagemaker:ListEndpoints
+                  - sagemaker:ListModels
+                  - sagemaker:AddTags
+                  - es:ListDomainNames
+                  - es:DescribeDomain
+                  - es:AddTags
+                  - kafka:ListClustersV2
+                  - kafka:TagResource
+                  - neptune:DescribeDBClusters
+                  - neptune:AddTagsToResource
+                  - docdb:DescribeDBClusters
+                  - docdb:AddTagsToResource
+                  - athena:ListWorkGroups
+                  - athena:TagResource
+                  - ecr:DescribeRepositories
+                  - ecr:TagResource
+                  - codebuild:ListProjects
+                  - codebuild:UpdateProject
+                  - codepipeline:ListPipelines
+                  - codepipeline:TagResource
+                  - dms:DescribeReplicationInstances
+                  - dms:AddTagsToResource
+                  - datasync:ListTasks
+                  - datasync:TagResource
+                  - workspaces:DescribeWorkspaces
+                  - workspaces:CreateTags
+                  - memorydb:DescribeClusters
+                  - memorydb:TagResource
+                  - redshift:DescribeClusters
+                  - redshift:CreateTags
+                  - cloudfront:ListDistributions
+                  - cloudfront:TagResource
+                  - apigateway:GET
+                  - apigateway:TagResource
+                  - kinesis:ListStreams
+                  - kinesis:AddTagsToStream
+                Resource: '*'
+              - Sid: STSGetCallerIdentity
+                Effect: Allow
+                Action:
+                  - sts:GetCallerIdentity
+                Resource: '*'
+
+  # Lambda Function
+  PRMTaggingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-PRMTagger'
+      Description: Automatically tags AWS resources for Partner Revenue Measurement
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: !Ref LambdaTimeout
+      MemorySize: !Ref LambdaMemory
+      Environment:
+        Variables:
+          TAG_KEY: !Ref TagKey
+          TAG_VALUE: !Ref TagValue
+          TARGET_REGIONS: !If [HasTargetRegions, !Ref TargetRegions, !Ref 'AWS::NoValue']
+          DRY_RUN: 'false'
+      Code:
+        ZipFile: |
+          # Placeholder - replace with actual lambda_function.py code
+          # Or deploy using a deployment package
+          def lambda_handler(event, context):
+              return {
+                  'statusCode': 200,
+                  'body': 'Please deploy the actual lambda_function.py code'
+              }
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+        - Key: Purpose
+          Value: PRM-Auto-Tagging
+
+  # CloudWatch Log Group
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${PRMTaggingFunction}'
+      RetentionInDays: 30
+
+  # EventBridge Rule for Scheduled Execution
+  ScheduledRule:
+    Type: AWS::Events::Rule
+    Condition: ScheduleEnabled
+    Properties:
+      Name: !Sub '${AWS::StackName}-Schedule'
+      Description: Trigger PRM tagging Lambda function on schedule
+      ScheduleExpression: !Ref ScheduleExpression
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt PRMTaggingFunction.Arn
+          Id: PRMTaggingTarget
+
+  # Permission for EventBridge to invoke Lambda
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Condition: ScheduleEnabled
+    Properties:
+      FunctionName: !Ref PRMTaggingFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ScheduledRule.Arn
+
+  # SNS Topic for Notifications (optional)
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-Notifications'
+      DisplayName: PRM Tagging Notifications
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+
+  # CloudWatch Alarm for Lambda Errors
+  LambdaErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-LambdaErrors'
+      AlarmDescription: Alert when Lambda function has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref PRMTaggingFunction
+      AlarmActions:
+        - !Ref NotificationTopic
+      TreatMissingData: notBreaching
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the PRM Tagging Lambda function
+    Value: !GetAtt PRMTaggingFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-FunctionArn'
+  
+  LambdaFunctionName:
+    Description: Name of the PRM Tagging Lambda function
+    Value: !Ref PRMTaggingFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-FunctionName'
+  
+  LambdaRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RoleArn'
+  
+  NotificationTopicArn:
+    Description: ARN of the SNS notification topic
+    Value: !Ref NotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-NotificationTopicArn'
+  
+  ScheduleExpression:
+    Description: EventBridge schedule expression
+    Value: !Ref ScheduleExpression
+    Condition: ScheduleEnabled
+  
+  InvocationCommand:
+    Description: AWS CLI command to manually invoke the function
+    Value: !Sub 'aws lambda invoke --function-name ${PRMTaggingFunction} --region ${AWS::Region} output.json'
