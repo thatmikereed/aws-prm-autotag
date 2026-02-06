@@ -308,4 +308,4 @@ For issues related to:
 
 ## License
 
-This script is provided as-is for use with AWS Partner Revenue Measurement requirements.
+This script is provided as-is for use with AWS Partner Revenue Measurement requirements.  Consider this as proof-of-concept code, not "production ready."  
