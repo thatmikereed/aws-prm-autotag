@@ -293,6 +293,19 @@ aws resourcegroupstaggingapi get-resources \
   --query 'length(ResourceTagMappingList)'
 ```
 
+## Making PRM Tags Visible in Cost Explorer
+
+By default, resource tags are not activated in Cost Explorer.
+
+To activate the new PRM tag for Cost Explorer you can run the following CLI command:
+
+```
+aws ce update-cost-allocation-tags-status --cost-allocation-tags-status TagKey=aws-apn-id,Status=Active
+```
+
+Noting that this *must be run in the management account* of an AWS Organization.
+    
+
 ## Additional Resources
 
 - [AWS Partner Revenue Measurement Documentation](https://docs.aws.amazon.com/PRM/latest/aws-prm-onboarding-guide/what-is-service.html)
